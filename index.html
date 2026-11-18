@@ -9,7 +9,7 @@
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%8E%82%3C/text%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=Fraunces:ital,opsz,wght@1,9..144,400;1,9..144,500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Abril+Fatface&family=Caveat:wght@500;700&family=Dancing+Script:wght@700&family=Fraunces:ital,opsz,wght@1,9..144,400;1,9..144,500;1,9..144,700&family=Pacifico&family=Playfair+Display:ital,wght@1,700&family=Shrikhand&display=swap" rel="stylesheet">
 <style>
   :root {
     --paper: #f4ebdd;
@@ -72,8 +72,8 @@
     position: relative; z-index: 2;
     min-height: 100svh;
     display: flex; flex-direction: column; align-items: center; justify-content: center;
-    padding: 96px 16px 48px;
-    gap: 28px;
+    padding: 76px 16px 32px;
+    gap: 20px;
   }
 
   h1 {
@@ -90,18 +90,32 @@
     letter-spacing: -.01em;
     color: var(--ink);
   }
+  /* "Zoe" cycles through several typefaces */
   h1 .name {
+    position: relative;
     display: block;
-    font-family: "Caveat", "Bradley Hand", cursive;
-    font-weight: 700;
+    height: clamp(96px, 26vw, 160px);
+    margin-top: 2px;
+  }
+  h1 .name > span {
     font-size: clamp(72px, 20vw, 128px);
+    position: absolute; left: 50%; top: 50%;
+    white-space: nowrap;
+    line-height: 1;
     color: var(--rust);
-    transform: rotate(-4deg);
-    margin-top: -4px;
+    opacity: 0;
+    transform: translate(-50%, -50%) rotate(var(--tilt, -4deg)) scale(.94);
+    filter: blur(6px);
+    transition: opacity .7s ease, transform .9s cubic-bezier(.2, .8, .2, 1), filter .7s ease;
+  }
+  h1 .name > span.on {
+    opacity: 1;
+    transform: translate(-50%, -50%) rotate(var(--tilt, -4deg)) scale(1);
+    filter: blur(0);
   }
 
   .player {
-    width: min(100%, 440px);
+    width: min(100%, 600px, max(300px, calc((100svh - 440px) * 1.56)));
     display: flex; flex-direction: column; align-items: center;
     gap: 22px;
   }
@@ -181,6 +195,12 @@
     .flag, .key.play.hint { animation: none; }
     .rise { animation-duration: .01s; }
   }
+  @media (min-width: 640px) {
+    .deck { gap: 18px; padding: 16px 20px 20px; }
+    .key { width: 68px; height: 58px; }
+    .key svg { width: 24px; height: 24px; }
+    .counter { font-size: 17px; min-width: 74px; }
+  }
   @media (max-width: 380px) {
     .deck { gap: 10px; padding: 12px 12px 16px; }
     .key { width: 50px; height: 48px; }
@@ -199,7 +219,14 @@
 <main>
   <h1 class="rise">
     <span class="hb">Happy Birthday</span>
-    <span class="name">Zoe</span>
+    <span class="name" id="name">
+      <span class="on" style="font-family:Caveat,cursive;font-weight:700;font-size:1em;--tilt:-4deg">Zoe</span>
+      <span style="font-family:'Playfair Display',serif;font-style:italic;font-weight:700;font-size:.82em;--tilt:0deg;color:var(--teal)">Zoe</span>
+      <span style="font-family:Pacifico,cursive;font-size:.72em;--tilt:-6deg">Zoe</span>
+      <span style="font-family:'Abril Fatface',serif;font-size:.84em;--tilt:-2deg;color:#b8862a">Zoe</span>
+      <span style="font-family:'Dancing Script',cursive;font-weight:700;font-size:.92em;--tilt:-5deg;color:#c46f6a">Zoe</span>
+      <span style="font-family:Shrikhand,cursive;font-size:.74em;--tilt:-3deg">Zoe</span>
+    </span>
   </h1>
 
   <div class="player">
@@ -256,13 +283,11 @@
           <line x1="40" y1="166" x2="360" y2="166" stroke-opacity=".7"/>
         </g>
         <!-- side letter -->
-        <rect x="34" y="30" width="22" height="26" rx="3" fill="none" stroke="var(--ink)" stroke-width="1.4"/>
-        <text x="45" y="49" text-anchor="middle" font-family="Fraunces, Georgia, serif" font-size="17" fill="var(--ink)">A</text>
+        <rect x="32" y="30" width="30" height="26" rx="3" fill="none" stroke="var(--ink)" stroke-width="1.4"/>
+        <text x="47" y="49" text-anchor="middle" font-family="Fraunces, Georgia, serif" font-style="italic" font-weight="700" font-size="16" fill="var(--ink)">22</text>
         <!-- handwriting -->
-        <text x="72" y="58" font-family="Caveat, cursive" font-weight="700" font-size="36" fill="#1f3b6e" transform="rotate(-2 72 58)">Zoe</text>
-        <text x="352" y="58" text-anchor="end" font-family="Caveat, cursive" font-weight="500" font-size="22" fill="#1f3b6e" transform="rotate(-2 352 58)">11 · 19</text>
-        <!-- tiny drawn heart -->
-        <path d="M150 44c-3-5-10-3-9 2 1 4 9 9 9 9s8-5 9-9c1-5-6-7-9-2z" fill="none" stroke="var(--rust)" stroke-width="1.6" stroke-linejoin="round" transform="rotate(-8 150 48)"/>
+        <text x="76" y="58" font-family="Caveat, cursive" font-weight="700" font-size="36" fill="#1f3b6e" transform="rotate(-2 76 58)">Zoe</text>
+        <text x="352" y="58" text-anchor="end" font-family="Caveat, cursive" font-weight="500" font-size="22" fill="#1f3b6e" transform="rotate(-2 352 58)">11 · 18</text>
 
         <!-- window -->
         <rect x="108" y="80" width="184" height="64" rx="11" fill="#fbf7ee"/>
@@ -364,6 +389,20 @@
     s.style.background = palette[Math.floor(rand() * palette.length)];
     s.style.transform = `rotate(${rand() * 180}deg)`;
     specks.appendChild(s);
+  }
+
+  /* ---------- "Zoe" font cycle ---------- */
+  const names = [...document.querySelectorAll("#name > span")];
+  // inline font-size is relative (em) to the base size set in CSS
+  names.forEach((n) => { const k = parseFloat(n.style.fontSize) || 1; n.style.fontSize = ""; n.style.setProperty("--k", k); n.style.fontSize = `calc(clamp(72px, 20vw, 128px) * ${k})`; });
+  if (!reduceMotion && names.length > 1) {
+    let i = 0;
+    const start = () => setInterval(() => {
+      names[i].classList.remove("on");
+      i = (i + 1) % names.length;
+      names[i].classList.add("on");
+    }, 2600);
+    (document.fonts ? document.fonts.ready : Promise.resolve()).then(() => setTimeout(start, 1400));
   }
 
   /* ---------- player ---------- */
