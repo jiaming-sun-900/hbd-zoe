@@ -66,7 +66,27 @@
 
   /* scattered paper confetti */
   .specks { position: fixed; inset: 0; z-index: 1; pointer-events: none; }
-  .speck { position: absolute; border-radius: 2px; opacity: .55; }
+  /* slowly falling confetti and curly ribbons */
+  .fall {
+    position: absolute; top: 0;
+    animation: fall var(--dur) linear var(--delay) infinite;
+    will-change: transform;
+  }
+  .sway {
+    animation: sway-x var(--swayDur) ease-in-out var(--delay) infinite alternate;
+  }
+  .bit {
+    display: block;
+    opacity: .62;
+    animation: flutter var(--flipDur) linear var(--delay) infinite;
+  }
+  .bit.ribbon { opacity: .75; }
+  @keyframes fall { from { transform: translateY(-8vh); } to { transform: translateY(108vh); } }
+  @keyframes sway-x { from { transform: translateX(calc(var(--amp) * -1)); } to { transform: translateX(var(--amp)); } }
+  @keyframes flutter {
+    from { transform: rotate(var(--rot)) rotate3d(var(--ax), 0deg); }
+    to { transform: rotate(calc(var(--rot) + var(--spin))) rotate3d(var(--ax), 360deg); }
+  }
 
   main {
     position: relative; z-index: 2;
@@ -192,7 +212,8 @@
   #confetti { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 4; pointer-events: none; }
 
   @media (prefers-reduced-motion: reduce) {
-    .flag, .key.play.hint { animation: none; }
+    .flag, .key.play.hint, .fall, .sway, .bit { animation: none; }
+    .fall { transform: translateY(var(--still)); }
     .rise { animation-duration: .01s; }
   }
   @media (min-width: 640px) {
@@ -369,26 +390,45 @@
     bunting.appendChild(p);
   }
 
-  /* ---------- scattered paper confetti (static) ---------- */
+  /* ---------- falling confetti and ribbons ---------- */
   const specks = document.getElementById("specks");
-  let seed = 19;
-  const rand = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
-  for (let i = 0; i < 34; i++) {
-    const s = document.createElement("span");
-    s.className = "speck";
-    let x = rand() * 100, y = 12 + rand() * 86;
-    // keep the centre column mostly clear
-    if (x > 22 && x < 78) x = x < 50 ? x - 20 : x + 20;
-    const round = rand() < 0.4;
-    const size = 5 + rand() * 7;
-    s.style.left = x + "%";
-    s.style.top = y + "%";
-    s.style.width = size + "px";
-    s.style.height = (round ? size : size * 0.45) + "px";
-    if (round) s.style.borderRadius = "50%";
-    s.style.background = palette[Math.floor(rand() * palette.length)];
-    s.style.transform = `rotate(${rand() * 180}deg)`;
-    specks.appendChild(s);
+  const count = innerWidth < 640 ? 26 : 44;
+  for (let i = 0; i < count; i++) {
+    const color = palette[Math.floor(Math.random() * palette.length)];
+    const fall = document.createElement("div");
+    fall.className = "fall";
+    const dur = 14 + Math.random() * 14; // seconds to cross the screen
+    fall.style.left = (Math.random() * 100) + "%";
+    fall.style.setProperty("--dur", dur + "s");
+    fall.style.setProperty("--delay", (-Math.random() * dur) + "s"); // already spread out on load
+    fall.style.setProperty("--still", (Math.random() * 100) + "vh");
+    const sway = document.createElement("div");
+    sway.className = "sway";
+    sway.style.setProperty("--amp", (10 + Math.random() * 26) + "px");
+    sway.style.setProperty("--swayDur", (2.4 + Math.random() * 2.6) + "s");
+    const bit = document.createElement("span");
+    bit.className = "bit";
+    bit.style.setProperty("--rot", (Math.random() * 360) + "deg");
+    bit.style.setProperty("--spin", ((Math.random() < .5 ? -1 : 1) * (90 + Math.random() * 180)) + "deg");
+    bit.style.setProperty("--flipDur", (2.5 + Math.random() * 4) + "s");
+    bit.style.setProperty("--ax", `${(Math.random()).toFixed(2)}, ${(Math.random()).toFixed(2)}, 0`);
+    const kind = Math.random();
+    if (kind < 0.28) {
+      // curly ribbon
+      const h = 26 + Math.random() * 20;
+      bit.classList.add("ribbon");
+      bit.innerHTML = `<svg width="12" height="${h}" viewBox="0 0 12 ${h}"><path d="M6 1 ${Array.from({ length: Math.floor(h / 8) }, (_, k) => `Q${k % 2 ? 1 : 11} ${k * 8 + 5} 6 ${k * 8 + 9}`).join(" ")}" fill="none" stroke="${color}" stroke-width="2.6" stroke-linecap="round"/></svg>`;
+    } else {
+      const round = kind < 0.55;
+      const size = 5 + Math.random() * 6;
+      bit.style.width = size + "px";
+      bit.style.height = (round ? size : size * 0.45) + "px";
+      bit.style.borderRadius = round ? "50%" : "1.5px";
+      bit.style.background = color;
+    }
+    sway.appendChild(bit);
+    fall.appendChild(sway);
+    specks.appendChild(fall);
   }
 
   /* ---------- "Zoe" font cycle ---------- */
